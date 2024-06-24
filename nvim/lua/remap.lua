@@ -9,6 +9,9 @@ vim.keymap.set('n', '<C-k>', ':m .-2<CR>==')
 vim.keymap.set('v', '<C-j>', ":m '>+1<CR>gv=gv")
 vim.keymap.set('v', '<C-k>', ":m '<-2<CR>gv=gv")
 
+-- Repeat last ex command with Alt-.
+vim.keymap.set('n', '<M-.>', '@:')
+
 -- use Ctrl+c and Ctrl+v as usual
 vim.keymap.set('v', '<C-c>', '"+ygv')
 vim.keymap.set('i', '<C-v>', '<C-o>:set paste<CR><C-r>+<C-o>:set nopaste<CR>')
