@@ -55,11 +55,28 @@ vim.keymap.set('n', 'ZX', function()
 	local cur_win = vim.api.nvim_get_current_win()
 	local cur_buf = vim.api.nvim_get_current_buf()
 
-	if vim.api.nvim_buf_get_option(cur_buf, 'buftype') == '' then
-		for _, buf in pairs(vim.api.nvim_list_bufs()) do
+	local function is_buf_regular_file(buf)
+		return vim.api.nvim_buf_get_option(buf, 'buftype') == ''
+	end
+	local function is_buf_modified(buf)
+		return vim.api.nvim_buf_get_option(buf, 'modified') == true
+	end
 
+	for _, win in pairs(vim.api.nvim_list_wins()) do
+		if win == cur_win then
+		elseif vim.api.nvim_win_get_buf(win) == cur_buf then
+			vim.api.nvim_win_close(cur_win, nil)
+			return
+		elseif is_buf_regular_file(vim.api.nvim_win_get_buf(win)) then
+			vim.api.nvim_buf_delete(cur_buf, {})
+			return
+		end
+	end
+
+	if is_buf_regular_file(cur_buf) then
+		for _, buf in pairs(vim.api.nvim_list_bufs()) do
 			if vim.api.nvim_buf_is_loaded(buf)
-				and vim.api.nvim_buf_get_option(buf, 'buftype') == ''
+				and is_buf_regular_file(buf)
 				and buf ~= cur_buf then
 
 				vim.api.nvim_win_set_buf(cur_win, buf)
@@ -67,11 +84,19 @@ vim.keymap.set('n', 'ZX', function()
 				return
 			end
 		end
-
 		if vim.api.nvim_buf_get_name(cur_buf) ~= ''
-			and vim.api.nvim_buf_get_option(cur_buf, 'modified') == false then
+			and not is_buf_modified(cur_buf) then
 			vim.cmd('enew')
 			vim.api.nvim_buf_delete(cur_buf, {})
+			vim.api.nvim_create_autocmd({'BufWinLeave'}, {
+				buffer = vim.api.nvim_get_current_buf(),
+				once = true,
+				callback = function(ev)
+					if not is_buf_modified(ev.buf) then
+						vim.schedule(function() vim.api.nvim_buf_delete(ev.buf, {}) end)
+					end
+				end
+			})
 		end
 	else
 		vim.api.nvim_buf_delete(cur_buf, {})
