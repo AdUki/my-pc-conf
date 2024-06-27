@@ -50,17 +50,18 @@ vim.keymap.set({'n', 'x'}, '<Leader>cc', function()
 	end
 end)
 
+local function is_buf_regular_file(buf)
+	return vim.api.nvim_buf_get_option(buf, 'buftype') == ''
+end
+local function is_buf_modified(buf)
+	return vim.api.nvim_buf_get_option(buf, 'modified') == true
+end
+
+
 -- delete current buffer keeping windows layout
 vim.keymap.set('n', 'ZX', function()
 	local cur_win = vim.api.nvim_get_current_win()
 	local cur_buf = vim.api.nvim_get_current_buf()
-
-	local function is_buf_regular_file(buf)
-		return vim.api.nvim_buf_get_option(buf, 'buftype') == ''
-	end
-	local function is_buf_modified(buf)
-		return vim.api.nvim_buf_get_option(buf, 'modified') == true
-	end
 
 	for _, win in pairs(vim.api.nvim_list_wins()) do
 		if win == cur_win then
@@ -109,7 +110,7 @@ end)
 -- delete all buffers that are not visible in any window
 vim.keymap.set('n', 'ZO', function()
 	for _, buf in pairs(vim.api.nvim_list_bufs()) do
-		if vim.api.nvim_buf_is_loaded(buf) then
+		if vim.api.nvim_buf_is_loaded(buf) and not is_buf_modified(buf) then
 
 			local found = false
 			for _, win in pairs(vim.api.nvim_list_wins()) do
