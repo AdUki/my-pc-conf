@@ -5,30 +5,15 @@ lsp_zero.on_attach(function(_, bufnr)
 end)
 
 require('mason').setup({})
-
 require('mason-lspconfig').setup({
+	ensure_installed = {
+		'lua_ls',
+		'clangd'
+	},
 	handlers = {
-		lsp_zero.default_setup,
-
-		lua_ls = function()
-			require('lspconfig').lua_ls.setup({
-				settings = {
-					Lua = {
-						runtime = {
-							version = 'LuaJIT'
-						},
-						diagnostics = {
-							globals = {'vim'}
-						},
-						workspace = {
-							library = {
-								vim.env.VIMRUNTIME
-							}
-						}
-					}
-				}
-			})
-		end
+		function(server_name)
+			require('lspconfig')[server_name].setup({})
+		end,
 	}
 })
 
