@@ -1,4 +1,3 @@
-vim.g.mapleader = ' '
 
 -- Move lines with Ctrl+j/k                                                                                                                                                         
 vim.keymap.set('n', '<C-j>', ':m .+1<CR>==')
