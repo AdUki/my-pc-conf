@@ -26,4 +26,4 @@ vim.opt.statusline = '%F %h%w%m%r %=%(%l,%c%V %= %P%)'
 
 vim.g.dispatch_handlers = { 'job' }
 
-vim.cmd [[colorscheme rose-pine]]
+vim.cmd [[colorscheme retrobox]]
