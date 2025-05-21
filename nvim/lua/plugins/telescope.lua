@@ -14,6 +14,7 @@ return {
 
 		require('telescope').setup({
 			defaults = {
+				preview = false,
 				mappings = {
 					i = {
 						["<C-j>"] = actions.move_selection_next,
